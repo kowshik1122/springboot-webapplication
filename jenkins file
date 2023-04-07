@@ -1,0 +1,37 @@
+pipeline {
+    agent any
+    
+    environment {
+        PATH = "/usr/share/maven/bin$PATH"
+    }
+
+    stages {
+        stage('scm checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/kowshik1122/springboot-webapplication.git'
+            }
+        }
+    stage('mvn build') {
+            steps {  
+                sh "mvn clean install"
+            }
+        }
+    stage('quality test') {
+            steps {
+             withSonarQubeEnv(installationName: 'sonarqube8.9.10') {
+                sh "mvn sonar:sonar"
+                }
+            }
+        }    
+    stage('deploy') {
+            steps {  
+                deploy adapters: [tomcat9(credentialsId: 'tomcat1', path: '', url: 'http://20.197.5.5:9090')], contextPath: null, war: '**/*.war'
+            }
+        }
+    stage('email trigger') {
+            steps {  
+                mail bcc: '', body: 'hi can you please check this build.', cc: '', from: '', replyTo: '', subject: 'build success', to: 'azurekowshi46@gmail.com'
+            }
+        }    
+    }
+}    
