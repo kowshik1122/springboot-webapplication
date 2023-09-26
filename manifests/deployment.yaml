@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kowshi
+  labels:
+    app: kowshi
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kowshi
+  template:
+    metadata:
+      labels:
+        app: kowshi
+    spec:
+      containers:
+        - name: kowshi
+          image: acrworkflow1695745513518.azurecr.io/image-workflow-1695745513518:latest
+          ports:
+            - containerPort: 8080
